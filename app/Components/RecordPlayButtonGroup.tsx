@@ -62,43 +62,6 @@ class RecordPlayButtonGroup extends React.Component<IProps, IState> {
 	public render(): React.ReactElement<{}> {
 		return (
 			<section style={this.props.style}>
-				<MultiStateSwitch
-					onDown={(e) => this.record(e)}>
-					<StaticCanvas
-						height={this.props.buttonSize}
-						width={this.props.buttonSize}
-						draw={this.draw}
-						options={{id: 'record'}}
-					/>
-				</MultiStateSwitch>
-
-				<MultiStateSwitch
-					onDown={(e) => this.play(e)}
-				    disabled={this.props.playButtonDisabled}
-				>
-					<StaticCanvas
-						height={this.props.buttonSize}
-						width={this.props.buttonSize}
-						draw={this.draw}
-						options={{id: 'play', disabled: this.props.playButtonDisabled}}
-					/>
-				</MultiStateSwitch>
-
-				<ToggleButton
-					disabled={this.props.playButtonDisabled}
-					onTouchStart={this.onTouchStartDownloadButton}
-					onTouchCancel={this.onTouchCancelDownloadButton}
-					onTouchEnd={this.onTouchEndDownloadButton}
-					onClick={this.onClickDownloadButton}
-					isOn={true}>
-					<StaticCanvas
-						height={this.props.buttonSize}
-						width={this.props.buttonSize}
-						draw={this.draw}
-						options={{id: 'download'}}
-					    isActive={this.state.downloadButtonHighlighted}
-					/>
-				</ToggleButton>
 			</section>
 		);
 	}

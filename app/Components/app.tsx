@@ -93,7 +93,7 @@ class App extends React.Component<any, IState> {
 		this._pixelRatio = CanvasUtils.getPixelRatio();
 
 		this.touches = new IdentifierIndexMap();
-		
+
 		this.initializeSpectrum();
 
 		this.Start = this.Start.bind(this);
@@ -172,11 +172,11 @@ class App extends React.Component<any, IState> {
 			}
 		}
 	}
-	
+
 	// private resetOnIOSLockedAudio() {
 	// 	this.props.dispatch(startModalChange(true));
 	// 	this.setState({startModalText: DEFAULTS.Copy.en.resumeText});
-	
+
 	// 	//Reset any record playback, download states
 
 	// 	//FIXME: This depends on what state the recording was in
@@ -245,11 +245,8 @@ class App extends React.Component<any, IState> {
 					width={this._touchAreaWidth}
 					height={this._touchAreaHeight}
 					onMouseDown={this.Start}
-					onTouchStart={this.Start}
 					onMouseUp={this.Stop}
-					onTouchEnd={this.Stop}
 					onMouseMove={this.Move}
-					onTouchMove={this.Move}
 					fireMouseLeaveOnElementExit={true}
 				    style={STYLE.touchArea}
 				/>
@@ -265,18 +262,9 @@ class App extends React.Component<any, IState> {
 						}}
 						     className="appStoreButton"
 						     style={Object.assign({}, STYLE.appStoreButton, mobileSizeSmall && STYLE.appStoreButtonSmall)}>
-							<span className="get-the-app-text">Get the app <span className="chevron chevron-up">&#8963;</span></span>
-							<ul>
-								<li><a href={iosAppStore}><span>iOS</span></a></li>
-								<li><a href={androidAppStore}><span>Android</span></a></li>
-								<li><a href={chromeAppStore}><span>Desktop</span></a></li>
-							</ul>
 						</div>
-						
+
 					</div>
-					<a href={DEFAULTS.Links.femur} className="madeByFemur" style={Object.assign({}, STYLE.madeByFemurLink, mobileSizeSmall && STYLE.madeByFemurLinkMobile)}>
-						By Femur
-					</a>
 					<SocialShareIcons/>
 				</div>
 				<DownloadModal
@@ -333,11 +321,11 @@ class App extends React.Component<any, IState> {
 	private onIOSAudioNotUnlocked(onNotUnlocked){
 		console.log('NOT UNLOCKED');
 
-		this.Audio.context.close();
+		//this.Audio.context.close();
 		this.Audio = new Audio();
 		// Reinitialize the spectrums with the updated Audio
 		this.initializeSpectrum();
-		
+
 
 		if (window.cordova){
 			console.log(this.Audio.context);
@@ -372,8 +360,15 @@ class App extends React.Component<any, IState> {
 	}
 
 	public Start(e: MouseEvent | Touch, identifier: number = 0): void {
+		//console.log("the x co-ordinate before", e.clientX);
+		//console.log("the x co-ordinate before", e.clientY);
+		//e.clientX= 10;
+		//e.clientY= 255;
+		//console.log("the x co-ordinate after", e.clientX);
+		//console.log("the x co-ordinate after", e.clientY);
 		const index = this.touches.Add(identifier);
 		const pos = CanvasUtils.getCoordinateFromEventAsPercentageWithinElement(e, this.canvas);
+		console.log("the pos for start is: ", pos);
 		//Only start animating when the touch is down
 		if (this._isAnimating === false) {
 			this.Draw();
@@ -382,8 +377,11 @@ class App extends React.Component<any, IState> {
 	}
 
 	public Stop(e: MouseEvent | Touch, identifier: number = 0): void {
+	//console.log("the x co-ordinate is", e.clientX);
+	//console.log("the x co-ordinate is", e.clientY);
 		const index = this.touches.GetIndexFromIdentifier(identifier);
 		const pos = CanvasUtils.getCoordinateFromEventAsPercentageWithinElement(e, this.canvas);
+		console.log("the pos for stop is: ", pos);
 		this.Audio.Stop(pos, index);
 
 		//Remove from list of touch ids
@@ -393,6 +391,7 @@ class App extends React.Component<any, IState> {
 	public Move(e: MouseEvent | Touch, id: number = 0) {
 		const index = this.touches.GetIndexFromIdentifier(id);
 		const pos = CanvasUtils.getCoordinateFromEventAsPercentageWithinElement(e, this.canvas);
+		console.log("the pos for move is: ", pos);
 		this.Audio.Move(pos, index);
 	}
 
