@@ -92,6 +92,8 @@ export function getElementArea(el: HTMLElement): Area {
 }
 
 export function getCoordinateFromPointerEvent(e: MouseEvent | Touch): Coordinate {
+  console.log("the page x is", e.pageX)
+  console.log("the page y is", e.pageY)
 	return {
 		x: e.pageX,
 		y: e.pageY,

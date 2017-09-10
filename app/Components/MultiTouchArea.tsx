@@ -44,8 +44,11 @@ class MultiTouchView extends React.Component<IProps, {}> {
 		this.onTouchCancel = this.onTouchCancel.bind(this);
 		this.handleResize = this.handleResize.bind(this);
 	}
-
+	simulateClick(e) {
+		 e.click()
+	 }
 	componentDidMount() {
+		console.log("In component did mount in multi touch area");
 		ReactDOM.findDOMNode(this).appendChild(this.props.canvas);
 		this.handleResize();
 		window.addEventListener('resize', this.handleResize);
@@ -71,15 +74,16 @@ class MultiTouchView extends React.Component<IProps, {}> {
 			this.handleResize();
 		}
 		return (
-			<div
-				style={this.getStyles()}
-				id="touchArea"
-				onTouchStart={this.onTouchStart}
-				onTouchEnd={this.onTouchEnd}
-				onTouchMove={this.onTouchMove}
-				onTouchCancel={this.onTouchCancel}
-			    onMouseDown={this.onMouseDown}
-			/>
+					<div
+						style={this.getStyles()}
+					id="touchArea"
+						className="multiTouchArea"
+						onTouchStart={this.onTouchStart}
+						onTouchEnd={this.onTouchEnd}
+						onTouchMove={this.onTouchMove}
+						onTouchCancel={this.onTouchCancel}
+					    onMouseDown={this.onMouseDown}
+					/>
 		);
 	}
 
@@ -95,6 +99,7 @@ class MultiTouchView extends React.Component<IProps, {}> {
 	}
 
 	private onMouseDown(e) {
+		console.log("in mouse down");
 		e.preventDefault();
 
 		// listen for other mouse events
@@ -114,6 +119,7 @@ class MultiTouchView extends React.Component<IProps, {}> {
 	}
 
 	private onMouseMove(e) {
+		console.log("in mouse move");
 		e.preventDefault();
 
 		// if this pointer is down
@@ -125,6 +131,7 @@ class MultiTouchView extends React.Component<IProps, {}> {
 	}
 
 	private onMouseUp(e) {
+		console.log("in mouse up");
 		e.preventDefault();
 		// if this pointer exists
 		if (this._pointers[MOUSE_ID]) {
@@ -140,6 +147,7 @@ class MultiTouchView extends React.Component<IProps, {}> {
 	}
 
 	private onMouseLeave(e) {
+		console.log("in mouse leave");
 		if (this.props.onMouseLeave){
 			this.props.onMouseLeave(e, MOUSE_ID)
 		}
@@ -147,6 +155,7 @@ class MultiTouchView extends React.Component<IProps, {}> {
 	}
 
 	private onTouchStart(e: TouchEvent) {
+		console.log("in touch start");
 		e.preventDefault();
 		const touches = e.changedTouches;
 		for (let i = 0; i < touches.length; i++) {
@@ -159,6 +168,7 @@ class MultiTouchView extends React.Component<IProps, {}> {
 	}
 
 	private onTouchMove(e: TouchEvent) {
+		console.log("in touch move");
 		e.preventDefault();
 		const touches = e.changedTouches;
 		for (let i = 0; i < touches.length; i++) {
@@ -176,6 +186,7 @@ class MultiTouchView extends React.Component<IProps, {}> {
 	}
 
 	private onTouchEnd(e: TouchEvent) {
+		console.log("in touch end");
 		e.preventDefault();
 		const touches = e.changedTouches;
 		for (let i = 0; i < touches.length; i++) {
@@ -188,6 +199,7 @@ class MultiTouchView extends React.Component<IProps, {}> {
 	}
 
 	private onTouchCancel(e: TouchEvent) {
+		console.log("in touch cancel");
 		e.preventDefault();
 		const touches = e.changedTouches;
 		for (let i = 0; i < touches.length; i++) {

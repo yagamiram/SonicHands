@@ -24,6 +24,7 @@ import {RecordStateType} from '../Constants/AppTypings';
 import {STATE} from '../Constants/AppTypings';
 import {PlayerStateType} from '../Constants/AppTypings';
 
+
 interface IState {
 	delayVal?: number;
 	feedbackVal?: number;
