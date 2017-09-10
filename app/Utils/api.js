@@ -1,9 +1,10 @@
 var axios = require('axios');
-
 module.exports = {
   fetchCoordinates: function () {
-    var encodeURI = window.encodeURI('http://localhost:8080/')
-    return axios.get(encodeURI).then(function (response) {
+    var encodeURI = window.encodeURI('https://api-m2x.att.com/v2/devices/94b177d7f116f44cf373b9dae7e0b0de/streams/coordinatesForSonicData/values')
+    return axios.get(encodeURI, {
+      headers: { 'x-m2x-key': '7efd78739762999168565cacb8be97e6' }
+    }).then(function (response) {
       console.log("the response for the python web server is", response)
       return response;
     })

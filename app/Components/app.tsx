@@ -247,7 +247,6 @@ class App extends React.Component<any, IState> {
 					height={this._touchAreaHeight}
 					onMouseDown={this.Start}
 					onMouseUp={this.Stop}
-					onMouseMove={this.Move}
 					fireMouseLeaveOnElementExit={true}
 				    style={STYLE.touchArea}
 				/>

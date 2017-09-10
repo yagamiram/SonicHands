@@ -78,7 +78,13 @@ class WaveformSelectGroup extends React.Component<IProps, IState> {
 		}
 	}
 
+
+	private playMusic(eachSensorEvent) {
+		console.log(eachSensorEvent);
+	}
+
 	private onButtonClick(e, waveform: string) {
+	debugger;
 	// Theory: When the start button is clicked, immediately make a call to the
 	// api and get the value. Once the value you have got for clientX
 	// if it is sensor2: choose a random value from 8 to 128
@@ -90,178 +96,186 @@ class WaveformSelectGroup extends React.Component<IProps, IState> {
 	// if it is sensorX: for less than 60 choose between 380 to 600 and for the rest choose between 80-380
 	// If you are getting value constantly on any sensor then apply mousemove unless
 	// all the sensors says "out of range"
-		var outOfRange = []
+		var outOfRangeCounter = 0
 		var multiTouchArea = document.getElementById('touchArea')
 		var isMouseEventDownTriggered = false
-		var whileCount = 0
-		while (whileCount <= 50) {
-			console.log("the while count is", whileCount);
+		var evt = new MouseEvent("mouseup", {
+				 view: window,
+				 bubbles: true,
+				 cancelable: true,
+				 clientX: 0,
+				 clientY: 0
+		 })
+		 multiTouchArea.dispatchEvent(evt);
 			api.fetchCoordinates().then(function (response) {
 				console.log("the waveform selection response is", response);
-				var parsedJson = JSON.parse(JSON.stringify(response.data));
-				var ycordinates = Object.keys(parsedJson).map(function(key) {
-	   											return parsedJson[key][1];
-												});
-
-				console.log("the yco-ordinates are", ycordinates);
-				if (Array.from(new Set(ycordinates)).length == 1) {
-					outOfRange.push("outofRange")
-				}
-				if (outOfRange.length > 5) {
-					// trigger mouse up event.
-
-					var evt = new MouseEvent("mouseup", {
-				       view: window,
-				       bubbles: true,
-				       cancelable: true,
-				       clientX: 80,
-				       clientY: 80
-				   })
-				   multiTouchArea.dispatchEvent(evt);
-				} else {
-							if ('Sensor1' in parsedJson && parsedJson.Sensor1[1] != 'Out of range') {
-								if (isMouseEventDownTriggered) {
-									var evt = new MouseEvent("mousemove", {
-											 view: window,
-											 bubbles: true,
-											 cancelable: true,
-											 clientX: Math.floor(Math.random() * (8 - 0 + 1)) + 0,
-											 clientY: (parsedJson.Sensor1[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
-									 })
-									 multiTouchArea.dispatchEvent(evt);
-								} else {
-									// Trigger mouse move
-									var evt = new MouseEvent("mousedown", {
-											 view: window,
-											 bubbles: true,
-											 cancelable: true,
-											 clientX: Math.floor(Math.random() * (8 - 0 + 1)) + 0,
-											 clientY: (parsedJson.Sensor1[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
-									 })
-									 multiTouchArea.dispatchEvent(evt);
-									 isMouseEventDownTriggered = true;
+				var results = response.data.values.map(function (key, value) { return key.value } )
+				var parsedJson = results.map(function (key) { return JSON.parse(key); })
+				parsedJson.map(function (sensorEvent) {
+					console.log(sensorEvent);
+					// pick each sensorEvent and check its Y coordinate
+					if (outOfRangeCounter > 5) {
+						// Trigger the mouse up event
+						var evt = new MouseEvent("mouseup", {
+								 view: window,
+								 bubbles: true,
+								 cancelable: true,
+								 clientX: 80,
+								 clientY: 80
+						 })
+						 multiTouchArea.dispatchEvent(evt);
+						 outOfRangeCounter = 0;
+					} else {
+								if ('Sensor1' in sensorEvent && sensorEvent.Sensor1[1] != 'Out of range') {
+									if (isMouseEventDownTriggered) {
+										var evt = new MouseEvent("mousemove", {
+												 view: window,
+												 bubbles: true,
+												 cancelable: true,
+												 clientX: Math.floor(Math.random() * (8 - 0 + 1)) + 0,
+												 clientY: (sensorEvent.Sensor1[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
+										 })
+										 multiTouchArea.dispatchEvent(evt);
+									} else {
+										// Trigger mouse move
+										var evt = new MouseEvent("mousedown", {
+												 view: window,
+												 bubbles: true,
+												 cancelable: true,
+												 clientX: Math.floor(Math.random() * (8 - 0 + 1)) + 0,
+												 clientY: (sensorEvent.Sensor1[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
+										 })
+										 multiTouchArea.dispatchEvent(evt);
+										 isMouseEventDownTriggered = true;
+									}
+								} else if('Sensor2' in sensorEvent && sensorEvent.Sensor2[1] != 'Out of range') {
+										if (isMouseEventDownTriggered) {
+											// Trigger mouse move
+											var evt = new MouseEvent("mousemove", {
+													 view: window,
+													 bubbles: true,
+													 cancelable: true,
+													 clientX: Math.floor(Math.random() * (128 - 8 + 1)) + 8,
+													 clientY: (sensorEvent.Sensor2[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
+											 })
+											 multiTouchArea.dispatchEvent(evt);
+										} else {
+											// Trigger mouse move
+											var evt = new MouseEvent("mousedown", {
+													 view: window,
+													 bubbles: true,
+													 cancelable: true,
+													 clientX: Math.floor(Math.random() * (128 - 8 + 1)) + 8,
+													 clientY: (sensorEvent.Sensor2[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
+											 })
+											 multiTouchArea.dispatchEvent(evt);
+											 isMouseEventDownTriggered = true;
+										}
+								} else if('Sensor3' in sensorEvent && sensorEvent.Sensor3[1] != 'Out of range') {
+										if (isMouseEventDownTriggered) {
+											// Trigger mouse move
+											var evt = new MouseEvent("mousemove", {
+													 view: window,
+													 bubbles: true,
+													 cancelable: true,
+													 clientX: Math.floor(Math.random() * (256 - 128 + 1)) + 128,
+													 clientY: (sensorEvent.Sensor3[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
+											 })
+											 multiTouchArea.dispatchEvent(evt);
+										} else {
+											// Trigger mouse move
+											var evt = new MouseEvent("mousedown", {
+													 view: window,
+													 bubbles: true,
+													 cancelable: true,
+													 clientX: Math.floor(Math.random() * (256 - 128 + 1)) + 128,
+													 clientY: (sensorEvent.Sensor3[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
+											 })
+											 multiTouchArea.dispatchEvent(evt);
+											 isMouseEventDownTriggered = true;
+										}
+								} else if('Sensor4' in parsedJson && parsedJson.Sensor4[1] != 'Out of range') {
+										if (isMouseEventDownTriggered) {
+											// Trigger mouse move
+											var evt = new MouseEvent("mousemove", {
+													 view: window,
+													 bubbles: true,
+													 cancelable: true,
+													 clientX: Math.floor(Math.random() * (384 - 256 + 1)) + 256,
+													 clientY: (sensorEvent.Sensor4[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
+											 })
+											 multiTouchArea.dispatchEvent(evt);
+										} else {
+											// Trigger mouse move
+											var evt = new MouseEvent("mousedown", {
+													 view: window,
+													 bubbles: true,
+													 cancelable: true,
+													 clientX: Math.floor(Math.random() * (384 - 256 + 1)) + 256,
+													 clientY: (sensorEvent.Sensor4[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
+											 })
+											 multiTouchArea.dispatchEvent(evt);
+											 isMouseEventDownTriggered = true;
+										}
+								} else if('Sensor5' in parsedJson && parsedJson.Sensor5[1] != 'Out of range') {
+										if (isMouseEventDownTriggered) {
+											// Trigger mouse move
+											var evt = new MouseEvent("mousemove", {
+													 view: window,
+													 bubbles: true,
+													 cancelable: true,
+													 clientX: Math.floor(Math.random() * (512 - 384 + 1)) + 384,
+													 clientY: (sensorEvent.Sensor5[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
+											 })
+											 multiTouchArea.dispatchEvent(evt);
+										} else {
+											// Trigger mouse move
+											var evt = new MouseEvent("mousedown", {
+													 view: window,
+													 bubbles: true,
+													 cancelable: true,
+													 clientX: Math.floor(Math.random() * (512 - 384 + 1)) + 384,
+													 clientY: (sensorEvent.Sensor5[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
+											 })
+											 multiTouchArea.dispatchEvent(evt);
+											 isMouseEventDownTriggered = true;
+										}
+								} else if('Sensor6' in parsedJson && parsedJson.Sensor6[1] != 'Out of range') {
+										if (isMouseEventDownTriggered) {
+											// Trigger mouse move
+											var evt = new MouseEvent("mousemove", {
+													 view: window,
+													 bubbles: true,
+													 cancelable: true,
+													 clientX: Math.floor(Math.random() * (880 - 512 + 1)) + 512,
+													 clientY: (sensorEvent.Sensor6[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
+											 })
+											 multiTouchArea.dispatchEvent(evt);
+										} else {
+											// Trigger mouse move
+											var evt = new MouseEvent("mousedown", {
+													 view: window,
+													 bubbles: true,
+													 cancelable: true,
+													 clientX: Math.floor(Math.random() * (880 - 512 + 1)) + 512,
+													 clientY: 80,
+											 })
+											 multiTouchArea.dispatchEvent(evt);
+											 isMouseEventDownTriggered = true;
+											 var evt = new MouseEvent("mouseup", {
+														view: window,
+														bubbles: true,
+														cancelable: true,
+														clientX: Math.floor(Math.random() * (880 - 512 + 1)) + 512,
+														clientY: 80,
+												})
+												multiTouchArea.dispatchEvent(evt);
+										}
 								}
-							} else if('Sensor2' in parsedJson && parsedJson.Sensor2[1] != 'Out of range') {
-									if (isMouseEventDownTriggered) {
-										// Trigger mouse move
-										var evt = new MouseEvent("mousemove", {
-												 view: window,
-												 bubbles: true,
-												 cancelable: true,
-												 clientX: Math.floor(Math.random() * (128 - 8 + 1)) + 8,
-												 clientY: (parsedJson.Sensor1[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
-										 })
-										 multiTouchArea.dispatchEvent(evt);
-									} else {
-										// Trigger mouse move
-										var evt = new MouseEvent("mousedown", {
-												 view: window,
-												 bubbles: true,
-												 cancelable: true,
-												 clientX: Math.floor(Math.random() * (128 - 8 + 1)) + 8,
-												 clientY: (parsedJson.Sensor1[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
-										 })
-										 multiTouchArea.dispatchEvent(evt);
-										 isMouseEventDownTriggered = true;
-									}
-							} else if('Sensor3' in parsedJson && parsedJson.Sensor3[1] != 'Out of range') {
-									if (isMouseEventDownTriggered) {
-										// Trigger mouse move
-										var evt = new MouseEvent("mousemove", {
-												 view: window,
-												 bubbles: true,
-												 cancelable: true,
-												 clientX: Math.floor(Math.random() * (256 - 128 + 1)) + 128,
-												 clientY: (parsedJson.Sensor1[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
-										 })
-										 multiTouchArea.dispatchEvent(evt);
-									} else {
-										// Trigger mouse move
-										var evt = new MouseEvent("mousedown", {
-												 view: window,
-												 bubbles: true,
-												 cancelable: true,
-												 clientX: Math.floor(Math.random() * (256 - 128 + 1)) + 128,
-												 clientY: (parsedJson.Sensor1[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
-										 })
-										 multiTouchArea.dispatchEvent(evt);
-										 isMouseEventDownTriggered = true;
-									}
-							} else if('Sensor4' in parsedJson && parsedJson.Sensor4[1] != 'Out of range') {
-									if (isMouseEventDownTriggered) {
-										// Trigger mouse move
-										var evt = new MouseEvent("mousemove", {
-												 view: window,
-												 bubbles: true,
-												 cancelable: true,
-												 clientX: Math.floor(Math.random() * (384 - 256 + 1)) + 256,
-												 clientY: (parsedJson.Sensor1[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
-										 })
-										 multiTouchArea.dispatchEvent(evt);
-									} else {
-										// Trigger mouse move
-										var evt = new MouseEvent("mousedown", {
-												 view: window,
-												 bubbles: true,
-												 cancelable: true,
-												 clientX: Math.floor(Math.random() * (384 - 256 + 1)) + 256,
-												 clientY: (parsedJson.Sensor1[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
-										 })
-										 multiTouchArea.dispatchEvent(evt);
-										 isMouseEventDownTriggered = true;
-									}
-							} else if('Sensor5' in parsedJson && parsedJson.Sensor5[1] != 'Out of range') {
-									if (isMouseEventDownTriggered) {
-										// Trigger mouse move
-										var evt = new MouseEvent("mousemove", {
-												 view: window,
-												 bubbles: true,
-												 cancelable: true,
-												 clientX: Math.floor(Math.random() * (512 - 384 + 1)) + 384,
-												 clientY: (parsedJson.Sensor1[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
-										 })
-										 multiTouchArea.dispatchEvent(evt);
-									} else {
-										// Trigger mouse move
-										var evt = new MouseEvent("mousedown", {
-												 view: window,
-												 bubbles: true,
-												 cancelable: true,
-												 clientX: Math.floor(Math.random() * (512 - 384 + 1)) + 384,
-												 clientY: (parsedJson.Sensor1[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
-										 })
-										 multiTouchArea.dispatchEvent(evt);
-										 isMouseEventDownTriggered = true;
-									}
-							} else {
-									if (isMouseEventDownTriggered) {
-										// Trigger mouse move
-										var evt = new MouseEvent("mousemove", {
-												 view: window,
-												 bubbles: true,
-												 cancelable: true,
-												 clientX: Math.floor(Math.random() * (880 - 512 + 1)) + 512,
-												 clientY: (parsedJson.Sensor1[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
-										 })
-										 multiTouchArea.dispatchEvent(evt);
-									} else {
-										// Trigger mouse move
-										var evt = new MouseEvent("mousedown", {
-												 view: window,
-												 bubbles: true,
-												 cancelable: true,
-												 clientX: Math.floor(Math.random() * (880 - 512 + 1)) + 512,
-												 clientY: (parsedJson.Sensor1[1] <= 60 ?  Math.floor(Math.random() * (600 - 380 + 1)) + 380 : Math.floor(Math.random() * (380 - 80 + 1)) + 80)
-										 })
-										 multiTouchArea.dispatchEvent(evt);
-										 isMouseEventDownTriggered = true;
-									}
-							}
-				}
-			})
+					}
 
-			whileCount += 1
-		}
+				 })
+			})
 		e.preventDefault();
 		this.props.waveformChange(waveform);
 		this.props.dispatch(Waveform(waveform));
